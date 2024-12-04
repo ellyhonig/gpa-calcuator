@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #fdf3d6;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f8e8a2;
+            color: #333;
+            font-weight: bold;
+        }
+        td input, td select {
+            width: 90%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        #addRow {
+            background-color: #6c757d;
+            color: white;
+        }
+        #addRow:hover {
+            background-color: #5a6268;
+        }
+        #reset {
+            background-color: #dc3545;
+            color: white;
+        }
+        #reset:hover {
+            background-color: #c82333;
+        }
+        #calculate {
+            background-color: #28a745;
+            color: white;
+        }
+        #calculate:hover {
+            background-color: #218838;
+        }
+        .gpa-output {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            color: #555;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GPA Calculator</h1>
+    <table id="gpaTable">
+        <thead>
+            <tr>
+                <th>Include</th>
+                <th>Course</th>
+                <th>Grade</th>
+                <th>Credits</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="checkbox" class="include-row" checked></td>
+                <td><input type="text" class="course-name"></td>
+                <td>
+                    <select class="grade">
+                        <option value="4.0">A</option>
+                        <option value="3.5">B+</option>
+                        <option value="3.0">B</option>
+                        <option value="2.5">C+</option>
+                        <option value="2.0">C</option>
+                        <option value="1.5">D+</option>
+                        <option value="1.0">D</option>
+                        <option value="0.0">F</option>
+                    </select>
+                </td>
+                <td><input type="number" class="credits" min="0"></td>
+                <td><button class="delete-row" style="background-color: #dc3545; color: white;">X</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="text-align: center;">
+        <button id="addRow">+ Add row</button>
+        <button id="reset">Reset</button>
+        <button id="calculate">= Calculate</button>
+    </div>
+    <div class="gpa-output" id="gpaOutput">GPA: </div>
+
+    <script>
+        document.getElementById('addRow').addEventListener('click', () => {
+            const table = document.getElementById('gpaTable').getElementsByTagName('tbody')[0];
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="checkbox" class="include-row" checked></td>
+                <td><input type="text" class="course-name"></td>
+                <td>
+                    <select class="grade">
+                        <option value="4.0">A</option>
+                        <option value="3.5">B+</option>
+                        <option value="3.0">B</option>
+                        <option value="2.5">C+</option>
+                        <option value="2.0">C</option>
+                        <option value="1.5">D+</option>
+                        <option value="1.0">D</option>
+                        <option value="0.0">F</option>
+                    </select>
+                </td>
+                <td><input type="number" class="credits" min="0"></td>
+                <td><button class="delete-row" style="background-color: #dc3545; color: white;">X</button></td>
+            `;
+            table.appendChild(newRow);
+        });
+
+        document.getElementById('gpaTable').addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-row')) {
+                e.target.parentElement.parentElement.remove();
+            }
+        });
+
+        document.getElementById('reset').addEventListener('click', () => {
+            const rows = document.querySelectorAll('#gpaTable tbody tr');
+            rows.forEach(row => {
+                if (!row.querySelector('.include-row').checked) return;
+                row.querySelector('.course-name').value = '';
+                row.querySelector('.grade').value = '4.0';
+                row.querySelector('.credits').value = '';
+            });
+            document.getElementById('gpaOutput').textContent = 'GPA: ';
+        });
+
+        document.getElementById('calculate').addEventListener('click', () => {
+            const rows = document.querySelectorAll('#gpaTable tbody tr');
+            let totalPoints = 0;
+            let totalCredits = 0;
+
+            rows.forEach(row => {
+                const include = row.querySelector('.include-row').checked;
+                const grade = parseFloat(row.querySelector('.grade').value);
+                const credits = parseFloat(row.querySelector('.credits').value);
+
+                if (include && !isNaN(grade) && !isNaN(credits)) {
+                    totalPoints += grade * credits;
+                    totalCredits += credits;
+                }
+            });
+
+            const gpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 'N/A';
+            document.getElementById('gpaOutput').textContent = `GPA: ${gpa}`;
+        });
+    </script>
+</body>
+</html>
